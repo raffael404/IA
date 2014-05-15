@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Estado {
 	
@@ -6,10 +9,12 @@ public class Estado {
 	private Movimento ultimoMovimento;
 	private Pilha pilhaDeEstados;
 	private Fila filaDeEstados;
+	private List<Movimento> movimentosPassados;
 	
 	public Estado() {
 		pilhaDeEstados = new Pilha();
 		filaDeEstados = new Fila();
+		movimentosPassados = new ArrayList<Movimento>();
 	}
 	
 	public Estado(Margem esquerda, Margem direita) {
@@ -33,17 +38,35 @@ public class Estado {
 	
 	public boolean testaEstado(){
 		
+		System.out.println("Estado visitado - D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C"
+		+ " E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C");
+		
 		//Estado proibido
 		if(esquerda.getMissionarios() != 0){
 			if(esquerda.getCanibais() > esquerda.getMissionarios()){
-//				System.out.println("Estado proibido!!!");
+				System.out.println("Estado proibido!!!");
 				return false;
 			}
 		}
 		if(direita.getMissionarios() != 0){
 			if(direita.getCanibais() > direita.getMissionarios()){
-//				System.out.println("Estado proibido!!!");
+				System.out.println("Estado proibido!!!");
 				return false;
+			}
+		}
+		
+		//Movimento repetido
+		if(ultimoMovimento.getDirecao() == 'D'){
+			for (int i = 0; i < movimentosPassados.size(); i++) {
+				if(movimentosPassados.get(i).getMissionarios() ==  direita.getMissionarios()
+				&& movimentosPassados.get(i).getCanibais() ==  direita.getCanibais()
+				&& movimentosPassados.get(i).getDirecao() == 'D') return false;
+			}
+		}else{
+			for (int i = 0; i < movimentosPassados.size(); i++) {
+				if(movimentosPassados.get(i).getMissionarios() ==  esquerda.getMissionarios()
+				&& movimentosPassados.get(i).getCanibais() ==  esquerda.getCanibais()
+				&& movimentosPassados.get(i).getDirecao() == 'E') return false;
 			}
 		}
 		
@@ -51,107 +74,26 @@ public class Estado {
 		if(esquerda.getMissionarios() == 0 && esquerda.getCanibais() == 0
 		&& direita.getMissionarios() == direita.getCanibais()){
 			System.out.println("Solução encontrada!!!");
-			return true;
+			return false;
 		}
 		
 		//Estado intermediário
 		return true;
 	}
 	
-//	public void buscaEmProfundidade(int missionarios, int canibais, char direcao){
-//		
-//		this.mover(missionarios, canibais, direcao);
-//		
-//		if(esquerda.getMissionarios() != 0){
-//			if(esquerda.getCanibais() > esquerda.getMissionarios()){
-//				System.out.println("Estado proibido!!!");
-//				return;
-//			}
-//		}
-//		if(direita.getMissionarios() != 0){
-//			if(direita.getCanibais() > direita.getMissionarios()){
-//				System.out.println("Estado proibido!!!");
-//				return;
-//			}
-//		}
-//		
-//		if(esquerda.getMissionarios() == 0 && esquerda.getCanibais() == 0
-////		&& direita.getMissionarios() == 3 && direita.getCanibais() == 3){
-//		&& direita.getMissionarios() == direita.getCanibais()){
-//			System.out.println("Solução encontrada!!!");
-//			return;
-//		}
-//		
-////		filhos.empilhar(new Estado(esquerda.clone(), direita.clone()));
-////		filhos.empilhar(new Estado(esquerda.clone(), direita.clone()));
-////		filhos.empilhar(new Estado(esquerda.clone(), direita.clone()));
-////		filhos.empilhar(new Estado(esquerda.clone(), direita.clone()));
-//		
-//		if(ultimoMovimento.getDirecao() == 'D'){
-//			for (int i = 0; i < 3; i++) {
-//				for (int j = 0; j < 3; j++) {
-//					if(i + j >= 1 && i + j <= 2){
-//						if(direita.getMissionarios() >= i && direita.getCanibais() >=j){
-//							if (ultimoMovimento.getMissionarios() != i && ultimoMovimento.getCanibais() != j){
-////								filhos.desempilhar().buscaEmProfundidade(i, j, 'E');
-//								new Estado(esquerda.clone(), direita.clone()).buscaEmProfundidade(i, j, 'E');
-//							}
-//						}//else filhos.desempilhar();
-//					}
-//				}
-//			}
-////			if(direita.getMissionarios() >= 1){
-////				if (ultimoMovimento.getMissionarios() != 1 && ultimoMovimento.getCanibais() != 0){ 
-////					//Problema = não está entrando aqui
-////					filhos.desempilhar().buscaEmProfundidade(1, 0, 'E');
-////				}
-////			}else filhos.desempilhar();
-////			if(direita.getCanibais() >= 1){
-////				if (ultimoMovimento.getMissionarios() != 0 && ultimoMovimento.getCanibais() != 1){
-////					filhos.desempilhar().buscaEmProfundidade(0, 1, 'E');
-////				}
-////			}else filhos.desempilhar();
-////			if(direita.getMissionarios() >= 1 && direita.getCanibais() >= 1){
-////				if (ultimoMovimento.getMissionarios() != 1 && ultimoMovimento.getCanibais() != 1){
-////					filhos.desempilhar().buscaEmProfundidade(1, 1, 'E');
-////				}
-////			}else filhos.desempilhar();
-////			if(direita.getMissionarios() >= 2){
-////				if (ultimoMovimento.getMissionarios() != 2 && ultimoMovimento.getCanibais() != 0){
-////					filhos.desempilhar().buscaEmProfundidade(2, 0, 'E');
-////				}
-////			}else filhos.desempilhar();
-////			if(direita.getCanibais() >= 2){
-////				if (ultimoMovimento.getMissionarios() != 0 && ultimoMovimento.getCanibais() != 2){
-////					filhos.desempilhar().buscaEmProfundidade(0, 2, 'E');
-////				}
-////			}else filhos.desempilhar();
-//		}else{
-//			for (int i = 0; i < 3; i++) {
-//				for (int j = 0; j < 3; j++) {
-//					if(i + j >= 1 && i + j <= 2){
-//						if(esquerda.getMissionarios() >= i && esquerda.getCanibais() >=j){
-//							if (ultimoMovimento.getMissionarios() != i && ultimoMovimento.getCanibais() != j){
-////								filhos.desempilhar().buscaEmProfundidade(i, j, 'D');
-//								new Estado(esquerda.clone(), direita.clone()).buscaEmProfundidade(i, j, 'D');
-//							}
-//						}//else filhos.desempilhar();
-//					}
-//				}
-//			}
-//		}
-//		
-//	}
 
-private void buscaEmProfundidade(Pilha pilha){
+	private void buscaEmProfundidade(Pilha pilha, List<Movimento> movimentosPassados){
 	
 		this.pilhaDeEstados = pilha;
+		this.movimentosPassados = movimentosPassados;
+		
 		if (testaEstado() == false){
-			if(!pilhaDeEstados.isEmpty()) pilhaDeEstados.desempilhar().buscaEmProfundidade(pilhaDeEstados);
+			if(!pilhaDeEstados.isEmpty()) pilhaDeEstados.desempilhar().buscaEmProfundidade(pilhaDeEstados, this.movimentosPassados);
 			return;
 		}
 		
 		if(ultimoMovimento.getDirecao() == 'D'){
+			movimentosPassados.add(new Movimento(direita.getMissionarios(), direita.getCanibais(), 'D'));
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					if(i + j == 1 || i + j == 2){
@@ -164,6 +106,7 @@ private void buscaEmProfundidade(Pilha pilha){
 				}
 			}
 		}else{
+			movimentosPassados.add(new Movimento(esquerda.getMissionarios(), esquerda.getCanibais(), 'E'));
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					if(i + j >= 1 && i + j <= 2){
@@ -176,46 +119,51 @@ private void buscaEmProfundidade(Pilha pilha){
 				}
 			}
 		}
-		if(!pilhaDeEstados.isEmpty()) pilhaDeEstados.desempilhar().buscaEmProfundidade(pilhaDeEstados);
+		if(!pilhaDeEstados.isEmpty()) pilhaDeEstados.desempilhar().buscaEmProfundidade(pilhaDeEstados, this.movimentosPassados);
 	}
 	
-private void buscaEmLargura(Fila fila){
+	private void buscaEmLargura(Fila fila, List<Movimento> movimentosPassados){
 		
 		this.filaDeEstados = fila;
+		this.movimentosPassados = movimentosPassados;
+		
 		if (testaEstado() == false){
-			if(!filaDeEstados.isEmpty()) filaDeEstados.desenfileirar().buscaEmLargura(filaDeEstados);
+			if(!filaDeEstados.isEmpty()) filaDeEstados.desenfileirar().buscaEmLargura(filaDeEstados, this.movimentosPassados);
 			return;
 		}
 		
 		if(ultimoMovimento.getDirecao() == 'D'){
+			movimentosPassados.add(new Movimento(direita.getMissionarios(), direita.getCanibais(), 'D'));
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					if(i + j >= 1 && i + j <= 2){
 						if(direita.getMissionarios() >= i && direita.getCanibais() >=j){
 							if (ultimoMovimento.getMissionarios() != i || ultimoMovimento.getCanibais() != j){
 								filaDeEstados.enfileirar(new Estado(esquerda.clone(), direita.clone()).mover(i, j, 'E'));
-							}else System.out.println("Movimento repetido!!!");
+							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
 				}
 			}
 		}else{
+			movimentosPassados.add(new Movimento(esquerda.getMissionarios(), esquerda.getCanibais(), 'E'));
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					if(i + j >= 1 && i + j <= 2){
 						if(esquerda.getMissionarios() >= i && esquerda.getCanibais() >=j){
 							if (ultimoMovimento.getMissionarios() != i || ultimoMovimento.getCanibais() != j){
 								filaDeEstados.enfileirar(new Estado(esquerda.clone(), direita.clone()).mover(i, j, 'D'));
-							}else System.out.println("Movimento repetido!!!");
+							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
 				}
 			}
 		}
-		if(!filaDeEstados.isEmpty()) filaDeEstados.desenfileirar().buscaEmLargura(filaDeEstados);
+		if(!filaDeEstados.isEmpty()) filaDeEstados.desenfileirar().buscaEmLargura(filaDeEstados, this.movimentosPassados);
 	}
 	
 	public void iniciarBuscaEmLargura(){
+		this.movimentosPassados.add(new Movimento(3, 3, 'E'));
 		this.esquerda = new Margem(3, 3);
 		this.direita = new Margem(0, 0);
 		filaDeEstados.enfileirar(new Estado(esquerda.clone(), direita.clone()).mover(1, 0, 'D'));
@@ -223,10 +171,13 @@ private void buscaEmLargura(Fila fila){
 		filaDeEstados.enfileirar(new Estado(esquerda.clone(), direita.clone()).mover(1, 1, 'D'));
 		filaDeEstados.enfileirar(new Estado(esquerda.clone(), direita.clone()).mover(2, 0, 'D'));
 		filaDeEstados.enfileirar(new Estado(esquerda.clone(), direita.clone()).mover(0, 2, 'D'));
-		filaDeEstados.desenfileirar().buscaEmLargura(filaDeEstados);
+		System.out.println("Estado visitado - D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C"
+				+ " E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C");
+		filaDeEstados.desenfileirar().buscaEmLargura(filaDeEstados, this.movimentosPassados);
 	}
 	
 	public void iniciarBuscaEmProfundidade(){
+		this.movimentosPassados.add(new Movimento(3, 3, 'E'));
 		this.esquerda = new Margem(3, 3);
 		this.direita = new Margem(0, 0);
 		pilhaDeEstados.empilhar(new Estado(esquerda.clone(), direita.clone()).mover(1, 0, 'D'));
@@ -234,7 +185,9 @@ private void buscaEmLargura(Fila fila){
 		pilhaDeEstados.empilhar(new Estado(esquerda.clone(), direita.clone()).mover(1, 1, 'D'));
 		pilhaDeEstados.empilhar(new Estado(esquerda.clone(), direita.clone()).mover(2, 0, 'D'));
 		pilhaDeEstados.empilhar(new Estado(esquerda.clone(), direita.clone()).mover(0, 2, 'D'));
-		pilhaDeEstados.desempilhar().buscaEmProfundidade(pilhaDeEstados);
+		System.out.println("Estado visitado - D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C"
+				+ " E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C");
+		pilhaDeEstados.desempilhar().buscaEmProfundidade(pilhaDeEstados, this.movimentosPassados);
 	}
 
 	public static void main(String[] args) {
@@ -248,6 +201,6 @@ private void buscaEmLargura(Fila fila){
 //		estadoInicial.buscaEmProfundidade(1, 1, 'D');
 //		estadoInicial.buscaEmProfundidade(2, 0, 'D');
 //		estadoInicial.buscaEmProfundidade(0, 2, 'D');
-		new Estado().iniciarBuscaEmLargura();
+		new Estado().iniciarBuscaEmProfundidade();
 	}
 }
