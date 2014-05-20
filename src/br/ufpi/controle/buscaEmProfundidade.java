@@ -1,5 +1,10 @@
+package br.ufpi.controle;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.ufpi.modelo.Estado;
+import br.ufpi.modelo.Movimento;
+import br.ufpi.modelo.Pilha;
 
 
 public class buscaEmProfundidade {

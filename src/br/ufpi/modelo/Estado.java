@@ -1,3 +1,4 @@
+package br.ufpi.modelo;
 import java.util.List;
 
 
@@ -81,11 +82,5 @@ public class Estado {
 		
 		//Estado intermediário
 		return true;
-	}
-
-	public static void main(String[] args) {
-		Estado inicial = new Estado(new Margem(3, 3), new Margem(0, 0));
-		buscaEmLargura busca = new buscaEmLargura();
-		busca.iniciar(inicial);
 	}
 }

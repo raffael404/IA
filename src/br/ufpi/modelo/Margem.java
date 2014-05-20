@@ -1,3 +1,4 @@
+package br.ufpi.modelo;
 
 public class Margem implements Cloneable{
 	

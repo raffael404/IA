@@ -1,5 +1,10 @@
+package br.ufpi.controle;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.ufpi.modelo.Estado;
+import br.ufpi.modelo.Fila;
+import br.ufpi.modelo.Movimento;
 
 
 public class buscaEmLargura {
