@@ -7,10 +7,15 @@ public class Estado {
 	private Margem esquerda;
 	private Margem direita;
 	private Movimento ultimoMovimento;
+	private int distancia;
 	
 	public Estado(Margem esquerda, Margem direita) {
 		this.esquerda = esquerda;
 		this.direita = direita;
+	}
+
+	public int getDistancia() {
+		return distancia;
 	}
 
 	public Margem getEsquerda() {
@@ -25,7 +30,8 @@ public class Estado {
 		return ultimoMovimento;
 	}
 
-	public Estado mover(int missionarios, int canibais, char direcao){
+	public Estado mover(int missionarios, int canibais, char direcao, int distancia){
+		this.distancia = distancia + 1;
 		this.ultimoMovimento = new Movimento(missionarios, canibais, direcao);
 		
 		if(direcao == 'D'){
@@ -77,6 +83,7 @@ public class Estado {
 		if(esquerda.getMissionarios() == 0 && esquerda.getCanibais() == 0
 		&& direita.getMissionarios() == direita.getCanibais()){
 			System.out.println("Solução encontrada!!!");
+			System.out.println("Profundidade da Solução: " + distancia);
 			return false;
 		}
 		

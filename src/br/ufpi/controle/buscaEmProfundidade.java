@@ -19,7 +19,7 @@ public class buscaEmProfundidade {
 	private void expandir(Estado estadoAtual, Pilha pilha, List<Movimento> movimentosPassados){
 		
 		if (estadoAtual.testaEstado(movimentosPassados) == false){
-			if(!pilhaDeEstados.isEmpty()) expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, this.movimentosPassados);
+			if(!pilhaDeEstados.isEmpty()) expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, movimentosPassados);
 			return;
 		}
 		
@@ -30,7 +30,7 @@ public class buscaEmProfundidade {
 					if(i + j == 1 || i + j == 2){
 						if(estadoAtual.getDireita().getMissionarios() >= i && estadoAtual.getDireita().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'E'));
+								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'E', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
@@ -43,25 +43,25 @@ public class buscaEmProfundidade {
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getEsquerda().getMissionarios() >= i && estadoAtual.getEsquerda().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'D'));
+								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'D', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
 				}
 			}
 		}
-		if(!pilhaDeEstados.isEmpty()) expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, this.movimentosPassados);
+		if(!pilhaDeEstados.isEmpty()) expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, movimentosPassados);
 	}
 	
 	public void iniciar(Estado estadoInicial){
-		this.movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 0, 'D'));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 1, 'D'));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 1, 'D'));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(2, 0, 'D'));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 2, 'D'));
+		movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
+		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 0, 'D', 0));
+		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 1, 'D', 0));
+		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 1, 'D', 0));
+		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(2, 0, 'D', 0));
+		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 2, 'D', 0));
 		System.out.println("Estado visitado - D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
 				+ " E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais() + "C");
-		expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, this.movimentosPassados);
+		expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, movimentosPassados);
 	}
 }

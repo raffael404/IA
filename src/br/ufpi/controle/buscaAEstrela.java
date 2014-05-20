@@ -7,33 +7,40 @@ import br.ufpi.modelo.Estado;
 import br.ufpi.modelo.Margem;
 import br.ufpi.modelo.Movimento;
 
-public class buscaGulosa {
+public class buscaAEstrela {
 	private List<Estado> fronteiraDeEstados;
 	private List<Movimento> movimentosPassados;
 	
-	public buscaGulosa() {
+	public buscaAEstrela(){
 		this.fronteiraDeEstados = new ArrayList<Estado>();
 		this.movimentosPassados = new ArrayList<Movimento>();
 	}
-
+	
 	private Estado funcaoHeuristica(List<Estado> fronteiraDeEstados){
-		Estado melhor = new Estado(new Margem(-1, -1), new Margem(-1, -1));
+		Estado melhor = new Estado(new Margem(100, 100), new Margem(-1, -1));
 		for (int i = 0; i < fronteiraDeEstados.size(); i++) {
-			if(fronteiraDeEstados.get(i).getDireita().getMissionarios() + fronteiraDeEstados.get(i).getDireita().getCanibais()
-			> melhor.getDireita().getMissionarios() + melhor.getDireita().getCanibais()){
+			if(fronteiraDeEstados.get(i).getEsquerda().getMissionarios()
+			+ fronteiraDeEstados.get(i).getEsquerda().getCanibais() 
+			+ fronteiraDeEstados.get(i).getDistancia()
+			< melhor.getEsquerda().getMissionarios()
+			+ melhor.getEsquerda().getCanibais()
+			+ melhor.getDistancia())
 				melhor = fronteiraDeEstados.get(i);
-			}
-			else if(fronteiraDeEstados.get(i).getDireita().getMissionarios() + fronteiraDeEstados.get(i).getDireita().getCanibais()
-			== melhor.getDireita().getMissionarios() + melhor.getDireita().getCanibais()){
-				if(fronteiraDeEstados.get(i).getUltimoMovimento().getDirecao() == 'E'
-				&& melhor.getUltimoMovimento().getDirecao() == 'D') melhor = fronteiraDeEstados.get(i);
+			else if(fronteiraDeEstados.get(i).getEsquerda().getMissionarios()
+					+ fronteiraDeEstados.get(i).getEsquerda().getCanibais() 
+					+ fronteiraDeEstados.get(i).getDistancia()
+					== melhor.getEsquerda().getMissionarios()
+					+ melhor.getEsquerda().getCanibais()
+					+ melhor.getDistancia()){
+						if(melhor.getUltimoMovimento().getDirecao() == 'D' 
+						&& fronteiraDeEstados.get(i).getUltimoMovimento().getDirecao() == 'E') melhor = fronteiraDeEstados.get(i);
 			}
 		}
 		fronteiraDeEstados.remove(melhor);
 		return melhor;
 	}
 	
-	private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimentosPassados){
+private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimentosPassados){
 		
 		Estado estadoAtual = funcaoHeuristica(fronteiraDeEstados);
 		
@@ -71,7 +78,7 @@ public class buscaGulosa {
 		}
 		if(!fronteiraDeEstados.isEmpty()) expandir(fronteiraDeEstados, movimentosPassados);
 	}
-	
+
 	public void iniciar(Estado estadoInicial){
 		movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
 		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 0, 'D', 0));
@@ -82,11 +89,5 @@ public class buscaGulosa {
 		System.out.println("Estado visitado - D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
 				+ " E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais() + "C");
 		expandir(fronteiraDeEstados, movimentosPassados);
-	}
-	
-	public static void main(String[] args) {
-		Estado inicial = new Estado(new Margem(3, 3), new Margem(0, 0));
-		buscaAEstrela busca = new buscaAEstrela();
-		busca.iniciar(inicial);
 	}
 }

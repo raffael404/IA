@@ -19,7 +19,7 @@ public class buscaEmLargura {
 	private void expandir(Estado estadoAtual, Fila filaDeEstados, List<Movimento> movimentosPassados){
 	
 	if (estadoAtual.testaEstado(movimentosPassados) == false){
-		if(!filaDeEstados.isEmpty()) expandir(filaDeEstados.desenfileirar(), filaDeEstados, this.movimentosPassados);
+		if(!filaDeEstados.isEmpty()) expandir(filaDeEstados.desenfileirar(), filaDeEstados, movimentosPassados);
 		return;
 	}
 	
@@ -30,7 +30,7 @@ public class buscaEmLargura {
 				if(i + j >= 1 && i + j <= 2){
 					if(estadoAtual.getDireita().getMissionarios() >= i && estadoAtual.getDireita().getCanibais() >=j){
 						if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-							filaDeEstados.enfileirar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'E'));
+							filaDeEstados.enfileirar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'E', estadoAtual.getDistancia()));
 						}//else System.out.println("Movimento repetido!!!");
 					}
 				}
@@ -43,25 +43,25 @@ public class buscaEmLargura {
 				if(i + j >= 1 && i + j <= 2){
 					if(estadoAtual.getEsquerda().getMissionarios() >= i && estadoAtual.getEsquerda().getCanibais() >=j){
 						if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-							filaDeEstados.enfileirar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'D'));
+							filaDeEstados.enfileirar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'D', estadoAtual.getDistancia()));
 						}//else System.out.println("Movimento repetido!!!");
 					}
 				}
 			}
 		}
 	}
-	if(!filaDeEstados.isEmpty()) expandir(filaDeEstados.desenfileirar(), filaDeEstados, this.movimentosPassados);
+	if(!filaDeEstados.isEmpty()) expandir(filaDeEstados.desenfileirar(), filaDeEstados, movimentosPassados);
 }
 
 public void iniciar(Estado estadoInicial){
-	this.movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
-	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 0, 'D'));
-	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 1, 'D'));
-	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 1, 'D'));
-	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(2, 0, 'D'));
-	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 2, 'D'));
+	movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
+	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 0, 'D', 0));
+	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 1, 'D', 0));
+	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 1, 'D', 0));
+	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(2, 0, 'D', 0));
+	filaDeEstados.enfileirar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 2, 'D', 0));
 	System.out.println("Estado visitado - D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
 			+ " E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais() + "C");
-	expandir(filaDeEstados.desenfileirar(), filaDeEstados, this.movimentosPassados);
+	expandir(filaDeEstados.desenfileirar(), filaDeEstados, movimentosPassados);
 }
 }
