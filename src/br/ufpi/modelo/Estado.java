@@ -1,6 +1,8 @@
 package br.ufpi.modelo;
 import java.util.List;
 
+import javax.swing.JTextArea;
+
 
 public class Estado {
 	
@@ -8,10 +10,12 @@ public class Estado {
 	private Margem direita;
 	private Movimento ultimoMovimento;
 	private int distancia;
+	private JTextArea textArea;
 	
-	public Estado(Margem esquerda, Margem direita) {
+	public Estado(Margem esquerda, Margem direita, JTextArea textArea) {
 		this.esquerda = esquerda;
 		this.direita = direita;
+		this.textArea = textArea;
 	}
 
 	public int getDistancia() {
@@ -47,19 +51,19 @@ public class Estado {
 	
 	public boolean testaEstado(List<Movimento> movimentosPassados){
 		
-		System.out.println("Estado visitado - D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C"
+		textArea.setText(textArea.getText() + "\nEstado visitado - D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C"
 		+ " E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C");
 		
 		//Estado proibido
 		if(esquerda.getMissionarios() != 0){
 			if(esquerda.getCanibais() > esquerda.getMissionarios()){
-				System.out.println("Estado proibido!!!");
+				textArea.setText(textArea.getText() + "\nEstado proibido!!!");
 				return false;
 			}
 		}
 		if(direita.getMissionarios() != 0){
 			if(direita.getCanibais() > direita.getMissionarios()){
-				System.out.println("Estado proibido!!!");
+				textArea.setText(textArea.getText() + "\nEstado proibido!!!");
 				return false;
 			}
 		}
@@ -80,10 +84,10 @@ public class Estado {
 		}
 		
 		//Estado final
-		if(esquerda.getMissionarios() == 0 && esquerda.getCanibais() == 0
-		&& direita.getMissionarios() == direita.getCanibais()){
-			System.out.println("Solução encontrada!!!");
-			System.out.println("Profundidade da Solução: " + distancia);
+		if(esquerda.getMissionarios() == 0 && esquerda.getCanibais() == 0){
+//		&& direita.getMissionarios() == direita.getCanibais()){
+			textArea.setText(textArea.getText() + "\nSolução encontrada!!!");
+			textArea.setText(textArea.getText() + "\nProfundidade da Solução: " + distancia);
 			return false;
 		}
 		

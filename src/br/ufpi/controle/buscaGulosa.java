@@ -3,6 +3,8 @@ package br.ufpi.controle;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JTextArea;
+
 import br.ufpi.modelo.Estado;
 import br.ufpi.modelo.Margem;
 import br.ufpi.modelo.Movimento;
@@ -10,14 +12,16 @@ import br.ufpi.modelo.Movimento;
 public class buscaGulosa {
 	private List<Estado> fronteiraDeEstados;
 	private List<Movimento> movimentosPassados;
+	private JTextArea textArea;
 	
-	public buscaGulosa() {
+	public buscaGulosa(JTextArea textArea) {
 		this.fronteiraDeEstados = new ArrayList<Estado>();
 		this.movimentosPassados = new ArrayList<Movimento>();
+		this.textArea = textArea;
 	}
 
 	private Estado funcaoHeuristica(List<Estado> fronteiraDeEstados){
-		Estado melhor = new Estado(new Margem(-1, -1), new Margem(-1, -1));
+		Estado melhor = new Estado(new Margem(-1, -1), new Margem(-1, -1), textArea);
 		for (int i = 0; i < fronteiraDeEstados.size(); i++) {
 			if(fronteiraDeEstados.get(i).getDireita().getMissionarios() + fronteiraDeEstados.get(i).getDireita().getCanibais()
 			> melhor.getDireita().getMissionarios() + melhor.getDireita().getCanibais()){
@@ -49,7 +53,7 @@ public class buscaGulosa {
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getDireita().getMissionarios() >= i && estadoAtual.getDireita().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'E', estadoAtual.getDistancia()));
+								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'E', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
@@ -62,7 +66,7 @@ public class buscaGulosa {
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getEsquerda().getMissionarios() >= i && estadoAtual.getEsquerda().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'D', estadoAtual.getDistancia()));
+								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'D', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
@@ -74,19 +78,13 @@ public class buscaGulosa {
 	
 	public void iniciar(Estado estadoInicial){
 		movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 0, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 1, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(1, 1, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(2, 0, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone()).mover(0, 2, 'D', 0));
-		System.out.println("Estado visitado - D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
+		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(1, 0, 'D', 0));
+		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(0, 1, 'D', 0));
+		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(1, 1, 'D', 0));
+		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(2, 0, 'D', 0));
+		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(0, 2, 'D', 0));
+		textArea.setText("Estado visitado - D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
 				+ " E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais() + "C");
 		expandir(fronteiraDeEstados, movimentosPassados);
-	}
-	
-	public static void main(String[] args) {
-		Estado inicial = new Estado(new Margem(3, 3), new Margem(0, 0));
-		buscaAEstrela busca = new buscaAEstrela();
-		busca.iniciar(inicial);
 	}
 }
