@@ -53,6 +53,7 @@ private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimento
 			return;
 		}
 		
+		textArea.setText(textArea.getText() + "\nEstado(s) filho(s):");
 		if(estadoAtual.getUltimoMovimento().getDirecao() == 'D'){
 			movimentosPassados.add(new Movimento(estadoAtual.getDireita().getMissionarios(), estadoAtual.getDireita().getCanibais(), 'D'));
 			for (int i = 0; i < 3; i++) {
@@ -60,6 +61,8 @@ private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimento
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getDireita().getMissionarios() >= i && estadoAtual.getDireita().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
+								textArea.setText(textArea.getText() + "\nE:" + (estadoAtual.getEsquerda().getMissionarios() + i) + "M" + (estadoAtual.getEsquerda().getCanibais() + j) + "C"
+										+ " D:" + (estadoAtual.getDireita().getMissionarios() - i) + "M" + (estadoAtual.getDireita().getCanibais() - j) + "C");
 								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'E', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
@@ -73,6 +76,8 @@ private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimento
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getEsquerda().getMissionarios() >= i && estadoAtual.getEsquerda().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
+								textArea.setText(textArea.getText() + "\nE:" + (estadoAtual.getEsquerda().getMissionarios() - i) + "M" + (estadoAtual.getEsquerda().getCanibais() - j) + "C"
+										+ " D:" + (estadoAtual.getDireita().getMissionarios() + i) + "M" + (estadoAtual.getDireita().getCanibais() + j) + "C");
 								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'D', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
@@ -80,6 +85,7 @@ private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimento
 				}
 			}
 		}
+		textArea.setText(textArea.getText() + "\n");
 		if(!fronteiraDeEstados.isEmpty()) expandir(fronteiraDeEstados, movimentosPassados);
 	}
 
@@ -90,8 +96,18 @@ private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimento
 		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(1, 1, 'D', 0));
 		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(2, 0, 'D', 0));
 		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(0, 2, 'D', 0));
-		textArea.setText("Estado visitado - D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
-				+ " E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais() + "C");
+		textArea.setText("Estado inicial - E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais()
+				+ " <-- D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
+				+ "\nEstados filhos: " + "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-1) + "M" + estadoInicial.getEsquerda().getCanibais() + "C"
+				+ " D:" + (estadoInicial.getDireita().getMissionarios()+1) + "M" + estadoInicial.getDireita().getCanibais() + "C"
+				+ "\nE:" + estadoInicial.getEsquerda().getMissionarios() + "M" + (estadoInicial.getEsquerda().getCanibais()-1) + "C"
+				+ " D:" + estadoInicial.getDireita().getMissionarios() + "M" + (estadoInicial.getDireita().getCanibais()+1) + "C"
+				+ "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-1) + "M" + (estadoInicial.getEsquerda().getCanibais()-1) + "C"
+				+ " D:" + (estadoInicial.getDireita().getMissionarios()+1) + "M" + (estadoInicial.getDireita().getCanibais()+1) + "C"
+				+ "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-2) + "M" + estadoInicial.getEsquerda().getCanibais() + "C"
+				+ " D:" + (estadoInicial.getDireita().getMissionarios()+2) + "M" + estadoInicial.getDireita().getCanibais() + "C"
+				+ "\nE:" + estadoInicial.getEsquerda().getMissionarios() + "M" + (estadoInicial.getEsquerda().getCanibais()-2) + "C"
+				+ " D:" + estadoInicial.getDireita().getMissionarios() + "M" + (estadoInicial.getDireita().getCanibais()+2) + "C\n");
 		expandir(fronteiraDeEstados, movimentosPassados);
 	}
 }

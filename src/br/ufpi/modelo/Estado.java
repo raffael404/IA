@@ -50,20 +50,24 @@ public class Estado {
 	}
 	
 	public boolean testaEstado(List<Movimento> movimentosPassados){
+		String canoa;
 		
-		textArea.setText(textArea.getText() + "\nEstado visitado - D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C"
-		+ " E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C");
+		if(ultimoMovimento.getDirecao() == 'D') canoa = "-->";
+		else canoa = "<--";
+		
+		textArea.setText(textArea.getText() + "\nEstado visitado - E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C "
+		+ canoa + " D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C");
 		
 		//Estado proibido
 		if(esquerda.getMissionarios() != 0){
 			if(esquerda.getCanibais() > esquerda.getMissionarios()){
-				textArea.setText(textArea.getText() + "\nEstado proibido!!!");
+				textArea.setText(textArea.getText() + " - Estado proibido!!!\n");
 				return false;
 			}
 		}
 		if(direita.getMissionarios() != 0){
 			if(direita.getCanibais() > direita.getMissionarios()){
-				textArea.setText(textArea.getText() + "\nEstado proibido!!!");
+				textArea.setText(textArea.getText() + " - Estado proibido!!!\n");
 				return false;
 			}
 		}
@@ -85,9 +89,8 @@ public class Estado {
 		
 		//Estado final
 		if(esquerda.getMissionarios() == 0 && esquerda.getCanibais() == 0){
-//		&& direita.getMissionarios() == direita.getCanibais()){
-			textArea.setText(textArea.getText() + "\nSolução encontrada!!!");
-			textArea.setText(textArea.getText() + "\nProfundidade da Solução: " + distancia);
+			textArea.setText(textArea.getText() + " - Solução encontrada!!!\n");
+//			textArea.setText(textArea.getText() + "\nProfundidade da Solução: " + distancia);
 			return false;
 		}
 		
