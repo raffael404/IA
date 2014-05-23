@@ -3,8 +3,6 @@ package br.ufpi.controle;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTextArea;
-
 import br.ufpi.modelo.Estado;
 import br.ufpi.modelo.Margem;
 import br.ufpi.modelo.Movimento;
@@ -12,16 +10,18 @@ import br.ufpi.modelo.Movimento;
 public class buscaAEstrela {
 	private List<Estado> fronteiraDeEstados;
 	private List<Movimento> movimentosPassados;
-	private JTextArea textArea;
+	private int tamFronteira;
+	private int qtdVisitados;
+	private StringBuffer log;
 	
-	public buscaAEstrela(JTextArea textArea){
+	public buscaAEstrela(){
 		this.fronteiraDeEstados = new ArrayList<Estado>();
 		this.movimentosPassados = new ArrayList<Movimento>();
-		this.textArea = textArea;
+		this.log  = new StringBuffer();
 	}
 	
 	private Estado funcaoHeuristica(List<Estado> fronteiraDeEstados){
-		Estado melhor = new Estado(new Margem(100, 100), new Margem(-1, -1), textArea);
+		Estado melhor = new Estado(new Margem(100, 100), new Margem(-1, -1));
 		for (int i = 0; i < fronteiraDeEstados.size(); i++) {
 			if(fronteiraDeEstados.get(i).getEsquerda().getMissionarios()
 			+ fronteiraDeEstados.get(i).getEsquerda().getCanibais() 
@@ -44,16 +44,20 @@ public class buscaAEstrela {
 		return melhor;
 	}
 	
-private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimentosPassados){
-		
+	private void expandir(){
+		qtdVisitados = qtdVisitados + 1;	
+		if(fronteiraDeEstados.size() > tamFronteira)
+				tamFronteira = fronteiraDeEstados.size();
 		Estado estadoAtual = funcaoHeuristica(fronteiraDeEstados);
 		
-		if (estadoAtual.testaEstado(movimentosPassados) == false){
-			if(!fronteiraDeEstados.isEmpty()) expandir(fronteiraDeEstados, movimentosPassados);
+		if (estadoAtual.testaEstado(movimentosPassados, log) == false){
+			if(!fronteiraDeEstados.isEmpty() && estadoAtual.getEsquerda().getMissionarios() + estadoAtual.getEsquerda().getCanibais() != 0)
+				expandir();
+			else log.append("\nTamanho máximo da fronteira de estados: " + tamFronteira + "\nQuantidade de estados visitados: " + qtdVisitados);
 			return;
 		}
 		
-		textArea.setText(textArea.getText() + "\nEstado(s) filho(s):");
+		log.append("\nEstado(s) filho(s):");
 		if(estadoAtual.getUltimoMovimento().getDirecao() == 'D'){
 			movimentosPassados.add(new Movimento(estadoAtual.getDireita().getMissionarios(), estadoAtual.getDireita().getCanibais(), 'D'));
 			for (int i = 0; i < 3; i++) {
@@ -61,9 +65,9 @@ private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimento
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getDireita().getMissionarios() >= i && estadoAtual.getDireita().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								textArea.setText(textArea.getText() + "\nE:" + (estadoAtual.getEsquerda().getMissionarios() + i) + "M" + (estadoAtual.getEsquerda().getCanibais() + j) + "C"
+								log.append("\nE:" + (estadoAtual.getEsquerda().getMissionarios() + i) + "M" + (estadoAtual.getEsquerda().getCanibais() + j) + "C"
 										+ " D:" + (estadoAtual.getDireita().getMissionarios() - i) + "M" + (estadoAtual.getDireita().getCanibais() - j) + "C");
-								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'E', estadoAtual.getDistancia()));
+								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'E', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
@@ -76,38 +80,24 @@ private void expandir(List<Estado> fronteiraDeEstados, List<Movimento> movimento
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getEsquerda().getMissionarios() >= i && estadoAtual.getEsquerda().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								textArea.setText(textArea.getText() + "\nE:" + (estadoAtual.getEsquerda().getMissionarios() - i) + "M" + (estadoAtual.getEsquerda().getCanibais() - j) + "C"
+								log.append("\nE:" + (estadoAtual.getEsquerda().getMissionarios() - i) + "M" + (estadoAtual.getEsquerda().getCanibais() - j) + "C"
 										+ " D:" + (estadoAtual.getDireita().getMissionarios() + i) + "M" + (estadoAtual.getDireita().getCanibais() + j) + "C");
-								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'D', estadoAtual.getDistancia()));
+								fronteiraDeEstados.add(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'D', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
 				}
 			}
 		}
-		textArea.setText(textArea.getText() + "\n");
-		if(!fronteiraDeEstados.isEmpty()) expandir(fronteiraDeEstados, movimentosPassados);
+		log.append("\n");
+		if(!fronteiraDeEstados.isEmpty() && estadoAtual.getEsquerda().getMissionarios() + estadoAtual.getEsquerda().getCanibais() != 0)
+			expandir();
+		else log.append("\nTamanho máximo da fronteira de estados: " + tamFronteira + "\nQuantidade de estados visitados: " + qtdVisitados);
 	}
 
-	public void iniciar(Estado estadoInicial){
-		movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(1, 0, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(0, 1, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(1, 1, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(2, 0, 'D', 0));
-		fronteiraDeEstados.add(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(0, 2, 'D', 0));
-		textArea.setText("Estado inicial - E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais()
-				+ " <-- D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
-				+ "\nEstados filhos: " + "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-1) + "M" + estadoInicial.getEsquerda().getCanibais() + "C"
-				+ " D:" + (estadoInicial.getDireita().getMissionarios()+1) + "M" + estadoInicial.getDireita().getCanibais() + "C"
-				+ "\nE:" + estadoInicial.getEsquerda().getMissionarios() + "M" + (estadoInicial.getEsquerda().getCanibais()-1) + "C"
-				+ " D:" + estadoInicial.getDireita().getMissionarios() + "M" + (estadoInicial.getDireita().getCanibais()+1) + "C"
-				+ "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-1) + "M" + (estadoInicial.getEsquerda().getCanibais()-1) + "C"
-				+ " D:" + (estadoInicial.getDireita().getMissionarios()+1) + "M" + (estadoInicial.getDireita().getCanibais()+1) + "C"
-				+ "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-2) + "M" + estadoInicial.getEsquerda().getCanibais() + "C"
-				+ " D:" + (estadoInicial.getDireita().getMissionarios()+2) + "M" + estadoInicial.getDireita().getCanibais() + "C"
-				+ "\nE:" + estadoInicial.getEsquerda().getMissionarios() + "M" + (estadoInicial.getEsquerda().getCanibais()-2) + "C"
-				+ " D:" + estadoInicial.getDireita().getMissionarios() + "M" + (estadoInicial.getDireita().getCanibais()+2) + "C\n");
-		expandir(fronteiraDeEstados, movimentosPassados);
+	public StringBuffer iniciar(Estado estadoInicial){
+		fronteiraDeEstados.add(estadoInicial);
+		expandir();
+		return log;
 	}
 }

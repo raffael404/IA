@@ -1,8 +1,6 @@
 package br.ufpi.modelo;
 import java.util.List;
 
-import javax.swing.JTextArea;
-
 
 public class Estado {
 	
@@ -10,12 +8,10 @@ public class Estado {
 	private Margem direita;
 	private Movimento ultimoMovimento;
 	private int distancia;
-	private JTextArea textArea;
 	
-	public Estado(Margem esquerda, Margem direita, JTextArea textArea) {
+	public Estado(Margem esquerda, Margem direita) {
 		this.esquerda = esquerda;
 		this.direita = direita;
-		this.textArea = textArea;
 	}
 
 	public int getDistancia() {
@@ -49,25 +45,25 @@ public class Estado {
 		return this;
 	}
 	
-	public boolean testaEstado(List<Movimento> movimentosPassados){
+	public boolean testaEstado(List<Movimento> movimentosPassados, StringBuffer log){
 		String canoa;
 		
 		if(ultimoMovimento.getDirecao() == 'D') canoa = "-->";
 		else canoa = "<--";
 		
-		textArea.setText(textArea.getText() + "\nEstado visitado - E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C "
+		log.append("\nEstado visitado - E:" + esquerda.getMissionarios() + "M" + esquerda.getCanibais() + "C "
 		+ canoa + " D:" + direita.getMissionarios() + "M" + direita.getCanibais() + "C");
 		
 		//Estado proibido
 		if(esquerda.getMissionarios() != 0){
 			if(esquerda.getCanibais() > esquerda.getMissionarios()){
-				textArea.setText(textArea.getText() + " - Estado proibido!!!\n");
+				log.append(" - Estado proibido!!!\n");
 				return false;
 			}
 		}
 		if(direita.getMissionarios() != 0){
 			if(direita.getCanibais() > direita.getMissionarios()){
-				textArea.setText(textArea.getText() + " - Estado proibido!!!\n");
+				log.append(" - Estado proibido!!!\n");
 				return false;
 			}
 		}
@@ -89,8 +85,8 @@ public class Estado {
 		
 		//Estado final
 		if(esquerda.getMissionarios() == 0 && esquerda.getCanibais() == 0){
-			textArea.setText(textArea.getText() + " - Solução encontrada!!!\n");
-//			textArea.setText(textArea.getText() + "\nProfundidade da Solução: " + distancia);
+			log.append(" - Solução encontrada!!!\n");
+			log.append("\nProfundidade da Solução: " + distancia);
 			return false;
 		}
 		

@@ -21,4 +21,8 @@ public class Pilha {
 		if(pilha.size() == 0) return true;
 		else return false;
 	}
+	
+	public int size(){
+		return pilha.size();
+	}
 }

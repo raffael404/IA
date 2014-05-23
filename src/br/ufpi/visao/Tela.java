@@ -99,11 +99,16 @@ public class Tela {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				textArea.setText("");
 				int missionarios = Integer.parseInt(textFieldMissionarios.getText());
 				int canibais = Integer.parseInt(textFieldCanibais.getText());
-				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0), textArea);
-				largura = new buscaEmLargura(textArea);
-				largura.iniciar(estadoInicial);
+				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0)).mover(0, 0, 'E', -1);
+				largura = new buscaEmLargura();
+				double tempo = System.currentTimeMillis();
+				StringBuffer log = largura.iniciar(estadoInicial);
+				tempo = System.currentTimeMillis() - tempo;
+				log.append("\nTempo de execução: " + tempo + "ms");
+				textArea.setText(textArea.getText() + log.toString());
 			}
 		});
 		
@@ -115,11 +120,16 @@ public class Tela {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				textArea.setText("");
 				int missionarios = Integer.parseInt(textFieldMissionarios.getText());
 				int canibais = Integer.parseInt(textFieldCanibais.getText());
-				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0), textArea);
-				profundidade = new buscaEmProfundidade(textArea);
-				profundidade.iniciar(estadoInicial);
+				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0)).mover(0, 0, 'E', -1);
+				profundidade = new buscaEmProfundidade();
+				double tempo = System.currentTimeMillis();
+				StringBuffer log = profundidade.iniciar(estadoInicial);
+				tempo = System.currentTimeMillis() - tempo;
+				log.append("\nTempo de execução: " + tempo + "ms");
+				textArea.setText(textArea.getText() + log.toString());
 			}
 		});
 		
@@ -131,11 +141,16 @@ public class Tela {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				textArea.setText("");
 				int missionarios = Integer.parseInt(textFieldMissionarios.getText());
 				int canibais = Integer.parseInt(textFieldCanibais.getText());
-				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0), textArea);
+				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0)).mover(0, 0, 'E', -1);
 				gulosa = new buscaGulosa(textArea);
-				gulosa.iniciar(estadoInicial);
+				double tempo = System.currentTimeMillis();
+				StringBuffer log = gulosa.iniciar(estadoInicial);
+				tempo = System.currentTimeMillis() - tempo;
+				log.append("\nTempo de execução: " + tempo + "ms");
+				textArea.setText(textArea.getText() + log.toString());
 			}
 		});
 		
@@ -147,11 +162,16 @@ public class Tela {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				textArea.setText("");
 				int missionarios = Integer.parseInt(textFieldMissionarios.getText());
 				int canibais = Integer.parseInt(textFieldCanibais.getText());
-				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0), textArea);
-				a = new buscaAEstrela(textArea);
-				a.iniciar(estadoInicial);
+				Estado estadoInicial = new Estado(new Margem(missionarios, canibais), new Margem(0, 0)).mover(0, 0, 'E', -1);
+				a = new buscaAEstrela();
+				double tempo = System.currentTimeMillis();
+				StringBuffer log = a.iniciar(estadoInicial);
+				tempo = System.currentTimeMillis() - tempo;
+				log.append("\nTempo de execução: " + tempo + "ms");
+				textArea.setText(textArea.getText() + log.toString());
 			}
 		});
 		

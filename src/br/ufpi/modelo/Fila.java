@@ -19,4 +19,8 @@ public class Fila {
 		if(fila.size() == 0) return true;
 		else return false;
 	}
+	
+	public int size(){
+		return fila.size();
+	}
 }

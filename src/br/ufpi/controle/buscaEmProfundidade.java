@@ -2,8 +2,6 @@ package br.ufpi.controle;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTextArea;
-
 import br.ufpi.modelo.Estado;
 import br.ufpi.modelo.Movimento;
 import br.ufpi.modelo.Pilha;
@@ -12,22 +10,30 @@ import br.ufpi.modelo.Pilha;
 public class buscaEmProfundidade {
 	private Pilha pilhaDeEstados;
 	private List<Movimento> movimentosPassados;
-	private JTextArea textArea;
+	private int tamFronteira;
+	private int qtdVisitados;
+	private StringBuffer log;
 	
-	public buscaEmProfundidade(JTextArea textArea) {
+	public buscaEmProfundidade() {
 		this.pilhaDeEstados = new Pilha();
 		this.movimentosPassados = new ArrayList<Movimento>();
-		this.textArea = textArea;
+		this.log = new StringBuffer();
 	}
 	
-	private void expandir(Estado estadoAtual, Pilha pilha, List<Movimento> movimentosPassados){
+	private void expandir(){
+		qtdVisitados = qtdVisitados + 1;
+		if(pilhaDeEstados.size() > tamFronteira)
+			tamFronteira = pilhaDeEstados.size();
+		Estado estadoAtual = pilhaDeEstados.desempilhar();
 		
-		if (estadoAtual.testaEstado(movimentosPassados) == false){
-			if(!pilhaDeEstados.isEmpty()) expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, movimentosPassados);
+		if (estadoAtual.testaEstado(movimentosPassados, log) == false){
+			if(!pilhaDeEstados.isEmpty() && estadoAtual.getEsquerda().getMissionarios() + estadoAtual.getEsquerda().getCanibais() != 0)
+				expandir();
+			else log.append("\nTamanho máximo da fronteira de estados: " + tamFronteira + "\nQuantidade de estados visitados: " + qtdVisitados);
 			return;
 		}
 		
-		textArea.setText(textArea.getText() + "\nEstado(s) filho(s):");
+		log.append("\nEstado(s) filho(s):");
 		if(estadoAtual.getUltimoMovimento().getDirecao() == 'D'){
 			movimentosPassados.add(new Movimento(estadoAtual.getDireita().getMissionarios(), estadoAtual.getDireita().getCanibais(), 'D'));
 			for (int i = 0; i < 3; i++) {
@@ -35,9 +41,9 @@ public class buscaEmProfundidade {
 					if(i + j == 1 || i + j == 2){
 						if(estadoAtual.getDireita().getMissionarios() >= i && estadoAtual.getDireita().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								textArea.setText(textArea.getText() + "\nE:" + (estadoAtual.getEsquerda().getMissionarios() + i) + "M" + (estadoAtual.getEsquerda().getCanibais() + j) + "C"
+								log.append("\nE:" + (estadoAtual.getEsquerda().getMissionarios() + i) + "M" + (estadoAtual.getEsquerda().getCanibais() + j) + "C"
 										+ " D:" + (estadoAtual.getDireita().getMissionarios() - i) + "M" + (estadoAtual.getDireita().getCanibais() - j) + "C");
-								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'E', estadoAtual.getDistancia()));
+								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'E', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
@@ -50,38 +56,25 @@ public class buscaEmProfundidade {
 					if(i + j >= 1 && i + j <= 2){
 						if(estadoAtual.getEsquerda().getMissionarios() >= i && estadoAtual.getEsquerda().getCanibais() >=j){
 							if (estadoAtual.getUltimoMovimento().getMissionarios() != i || estadoAtual.getUltimoMovimento().getCanibais() != j){
-								textArea.setText(textArea.getText() + "\nE:" + (estadoAtual.getEsquerda().getMissionarios() - i) + "M" + (estadoAtual.getEsquerda().getCanibais() - j) + "C"
+								log.append("\nE:" + (estadoAtual.getEsquerda().getMissionarios() - i) + "M" + (estadoAtual.getEsquerda().getCanibais() - j) + "C"
 										+ " D:" + (estadoAtual.getDireita().getMissionarios() + i) + "M" + (estadoAtual.getDireita().getCanibais() + j) + "C");
-								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone(), textArea).mover(i, j, 'D', estadoAtual.getDistancia()));
+								pilhaDeEstados.empilhar(new Estado(estadoAtual.getEsquerda().clone(), estadoAtual.getDireita().clone()).mover(i, j, 'D', estadoAtual.getDistancia()));
 							}//else System.out.println("Movimento repetido!!!");
 						}
 					}
 				}
 			}
 		}
-		textArea.setText(textArea.getText() + "\n");
-		if(!pilhaDeEstados.isEmpty()) expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, movimentosPassados);
+		log.append("\n");
+		if(!pilhaDeEstados.isEmpty() && estadoAtual.getEsquerda().getMissionarios() + estadoAtual.getEsquerda().getCanibais() != 0)
+			expandir();
+		else log.append("\nTamanho máximo da fronteira de estados: " + tamFronteira + "\nQuantidade de estados visitados: " + qtdVisitados);
 	}
 	
-	public void iniciar(Estado estadoInicial){
-		movimentosPassados.add(new Movimento(estadoInicial.getEsquerda().getMissionarios(), estadoInicial.getEsquerda().getCanibais(), 'E'));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(1, 0, 'D', 0));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(0, 1, 'D', 0));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(1, 1, 'D', 0));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(2, 0, 'D', 0));
-		pilhaDeEstados.empilhar(new Estado(estadoInicial.getEsquerda().clone(), estadoInicial.getDireita().clone(), textArea).mover(0, 2, 'D', 0));
-		textArea.setText("Estado inicial - E:" + estadoInicial.getEsquerda().getMissionarios() + "M" + estadoInicial.getEsquerda().getCanibais()
-				+ " <-- D:" + estadoInicial.getDireita().getMissionarios() + "M" + estadoInicial.getDireita().getCanibais() + "C"
-				+ "\nEstados filhos: " + "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-1) + "M" + estadoInicial.getEsquerda().getCanibais() + "C"
-				+ " D:" + (estadoInicial.getDireita().getMissionarios()+1) + "M" + estadoInicial.getDireita().getCanibais() + "C"
-				+ "\nE:" + estadoInicial.getEsquerda().getMissionarios() + "M" + (estadoInicial.getEsquerda().getCanibais()-1) + "C"
-				+ " D:" + estadoInicial.getDireita().getMissionarios() + "M" + (estadoInicial.getDireita().getCanibais()+1) + "C"
-				+ "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-1) + "M" + (estadoInicial.getEsquerda().getCanibais()-1) + "C"
-				+ " D:" + (estadoInicial.getDireita().getMissionarios()+1) + "M" + (estadoInicial.getDireita().getCanibais()+1) + "C"
-				+ "\nE:" + (estadoInicial.getEsquerda().getMissionarios()-2) + "M" + estadoInicial.getEsquerda().getCanibais() + "C"
-				+ " D:" + (estadoInicial.getDireita().getMissionarios()+2) + "M" + estadoInicial.getDireita().getCanibais() + "C"
-				+ "\nE:" + estadoInicial.getEsquerda().getMissionarios() + "M" + (estadoInicial.getEsquerda().getCanibais()-2) + "C"
-				+ " D:" + estadoInicial.getDireita().getMissionarios() + "M" + (estadoInicial.getDireita().getCanibais()+2) + "C\n");
-		expandir(pilhaDeEstados.desempilhar(), pilhaDeEstados, movimentosPassados);
+	public StringBuffer iniciar(Estado estadoInicial){
+//		textArea.setText("");
+		pilhaDeEstados.empilhar(estadoInicial);
+		expandir();
+		return log;
 	}
 }
